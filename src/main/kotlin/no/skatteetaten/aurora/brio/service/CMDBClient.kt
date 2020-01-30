@@ -1,5 +1,6 @@
 package no.skatteetaten.aurora.brio.service
 
+import mu.KotlinLogging
 import no.skatteetaten.aurora.brio.domain.BaseCMDBObject
 import no.skatteetaten.aurora.brio.domain.CmdbType
 import org.json.JSONArray
@@ -9,8 +10,11 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import java.lang.IllegalArgumentException
+
+private val logger = KotlinLogging.logger {}
 
 @Service
 class CMDBClient {
@@ -21,6 +25,11 @@ class CMDBClient {
 
     fun findByKey(key: String): JSONObject? {
         val iqlUrl = "${SCHEMA_URL}/instance/iql/Key=${key}"
+        return doGet(iqlUrl).getJSONObject(0);
+    }
+
+    fun findById(id: Int): JSONObject? {
+        val iqlUrl = "${SCHEMA_URL}/instance/iql/objectId=${id}"
         return doGet(iqlUrl).getJSONObject(0);
     }
 
@@ -57,17 +66,17 @@ class CMDBClient {
     }
 
     fun deleteObject(type: CmdbType, instance: JSONObject) : Boolean {
-        var id : String?
+        var id : Int?
         if(instance.has("id")){
-            id = instance.getString("id")
+            id = instance.getInt("id")
         }else if(instance.has("objectKey")){
             val key = instance.getString("objectKey")
-            id = findByKey(key)?.getString("id")
+            id = findByKey(key)?.getInt("id")
         }else{
             return false
         }
 
-        val delUrl = "${SCHEMA_URL}/type/${type}/instance/${id}"
+        val delUrl = "${SCHEMA_URL}/type/${type.id}/instance/${id}"
         doDelete(delUrl)
         return true;
     }
@@ -86,10 +95,21 @@ class CMDBClient {
     private fun doPost(url: String, data: JSONObject) : JSONObject {
         val headers = getHeaders()
         val entity = HttpEntity(data.toString(), headers)
-        val response = RestTemplate().exchange(url, HttpMethod.POST, entity, JSONObject::class.java)
 
-        val body = response.body ?: throw Exception("Could not perform post, body was empty. Response code from CMDB: ${response.statusCode}")
-        return body
+
+
+        val response = try {
+            RestTemplate().exchange(url, HttpMethod.POST, entity, String::class.java)
+        }catch (e: HttpClientErrorException) {
+            logger.warn("failed response CMDB for request: $url containing data:\n$data\n"+
+                "Response was: ${e.message}")
+            throw e
+        }
+
+        val body = response.body
+                ?: throw Exception("Could not perform post, body was empty. Response code from CMDB: ${response.statusCode}")
+        return JSONObject(body)
+
     }
 
     private fun doGet(url: String): JSONArray {

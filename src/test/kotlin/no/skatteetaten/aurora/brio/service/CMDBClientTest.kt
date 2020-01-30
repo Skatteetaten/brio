@@ -9,6 +9,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import assertk.assertThat
 import assertk.assertions.*
 import no.skatteetaten.aurora.brio.domain.Application
+import no.skatteetaten.aurora.brio.domain.CmdbStatic
 import no.skatteetaten.aurora.brio.domain.CmdbType
 import java.time.LocalDateTime
 import kotlin.test.assertNotNull
@@ -38,6 +39,15 @@ internal class CMDBClientTest {
         val response_none = service.findObjectOfTypeByName(CmdbType.Artifact, "No_artifact")
         assertNotNull(response_none)
         assertThat(response_none.isEmpty).isTrue()
+    }
+
+    @Test
+    fun findById(){
+        val id = 69461
+        val response = service.findById(id)
+        assertNotNull(response)
+        assertThat(response.isEmpty).isFalse()
+        assertThat(response.getInt(CmdbStatic.ID)).isEqualTo(id)
     }
 
     @Test
