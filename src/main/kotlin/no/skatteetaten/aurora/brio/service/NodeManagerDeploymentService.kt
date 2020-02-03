@@ -51,9 +51,8 @@ class NodeManagerDeploymentService {
         val jsonInstance = updateOrCreateNamedObject(instance)
         //Need to retreive newly created by finBy iql as returned json after create is incomplete
         val id = jsonInstance.getInt(CmdbStatic.ID)
-        val newJsonInstance = cmdbClient.findById(id)
-                ?: throw Exception("Can not find newly created object in CMDB by id $id")
-        return cmdbObjectBuilder.construct(newJsonInstance) as NodeManagerDeployment
+        val newJsonInstance = cmdbClient.findById(id) ?: throw Exception("Can not find newly created object in CMDB by id $id")
+        return cmdbObjectBuilder.buildCmdObject(newJsonInstance) as NodeManagerDeployment
     }
 
     private fun updateOrCreateNamedObject(instance: BaseCMDBObject) : JSONObject{

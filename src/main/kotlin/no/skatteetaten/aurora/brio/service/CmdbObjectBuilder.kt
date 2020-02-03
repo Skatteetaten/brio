@@ -13,58 +13,38 @@ class CmdbObjectBuilder {
     @Autowired
     lateinit var cmdbClient: CMDBClient
 
-    val dateFormatter = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm")
-
-    fun construct(jsonString: String): BaseCMDBObject {
-        val node = JSONObject(jsonString)
-        return construct(node)
+    constructor(cmdbClient: CMDBClient){
+        this.cmdbClient = cmdbClient
     }
 
-    private val OBJECT_TYPE = "objectType"
-    private val ID = "id"
-    private val KEY = "Key"
-    private val NAME = "Name"
-    private val CREATED = "Created"
-    private val UPDATED = "Updated"
-    private val PART_OF = "PartOf"
-    private val APPLICATIONS = "Applications"
-    private val VERSION = "Version"
-    private val ARTIFACT_ID = "ArtifactID"
-    private val ATTRIBUTE = "attribute"
-    private val GROUP_ID = "GroupId"
-    private val ARTIFACTS = "Artifacts"
-    private val DATABASES = "Databases"
-    private val OBJECT_KEY = "objectKey"
-    private val APPLICATION_INSTANCES = "ApplicationInstances"
+    val dateFormatter : DateTimeFormatter = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm")
 
-    private val TYPE_ARTIFACT = "Artifact"
-    private val TYPE_APPLICATION_INSTANCE = "ApplicationInstance"
-    private val TYPE_DATABASE = "Database"
-    private val TYPE_APPLICATION = "Application"
-    private val TYPE_NODE_MANAGER_DEPLOYMENT = "NodeManagerDeployment"
+    fun buildCmdObject(jsonString: String): BaseCMDBObject {
+        val node = JSONObject(jsonString)
+        return buildCmdObject(node)
+    }
 
 
+    fun buildCmdObject(node: JSONObject): BaseCMDBObject {
+        val objectType = node.getString(CmdbStatic.OBJECT_TYPE)
 
-
-    fun construct(node: JSONObject): BaseCMDBObject {
-        val objectType = node.getString(OBJECT_TYPE)
-
-        val id : Int? = if(node.has(ID)) node.getInt(ID) else null
-        val key : String? = if(node.has(KEY)) node.getString(KEY) else null
-        val name = node.getString(NAME)
-        val created = LocalDateTime.parse(node.getString(CREATED), dateFormatter)
-        val updated = LocalDateTime.parse(node.getString(UPDATED), dateFormatter)
+        val id : Int? = if(node.has(CmdbStatic.ID)) node.getInt(CmdbStatic.ID) else null
+        val key : String? = if(node.has(CmdbStatic.KEY)) node.getString(CmdbStatic.KEY) else null
+        val name = node.getString(CmdbStatic.NAME)
+        val created = LocalDateTime.parse(node.getString(CmdbStatic.CREATED), dateFormatter)
+        val updated = LocalDateTime.parse(node.getString(CmdbStatic.UPDATED), dateFormatter)
 
         lateinit var cmdbObject: BaseCMDBObject
         when (objectType) {
-            TYPE_ARTIFACT -> cmdbObject = Artifact(
+            CmdbStatic.TYPE_ARTIFACT -> cmdbObject = Artifact(
                     id, key, name, created, updated,
-                    if(node.has(PART_OF) && node.getString(PART_OF) != "") constructChildNode(node.getJSONObject(PART_OF)) as Application? else null,
-                    node.getString(GROUP_ID),
-                    node.getString(VERSION),
-                    node.getString(ARTIFACT_ID)
+                    if(node.has(CmdbStatic.PART_OF) && node.get(CmdbStatic.PART_OF) != "")
+                        constructChildNode(node.getJSONObject(CmdbStatic.PART_OF)) as Application? else null,
+                    node.getString(CmdbStatic.GROUP_ID),
+                    node.getString(CmdbStatic.VERSION),
+                    node.getString(CmdbStatic.ARTIFACT_ID)
             )
-            TYPE_APPLICATION_INSTANCE -> {
+            CmdbStatic.TYPE_APPLICATION_INSTANCE -> {
                 val server = if(hasValue(node, CmdbStatic.RUNNING_ON))
                     constructChildNode(node.getJSONObject(CmdbStatic.RUNNING_ON)) as Server else null
                 val environment = if(hasValue(node, CmdbStatic.ENVIRONMENT))
@@ -72,8 +52,8 @@ class CmdbObjectBuilder {
 
                 cmdbObject = ApplicationInstance(id, key, name, created, updated, server, environment)
             }
-            TYPE_DATABASE -> cmdbObject = Database(id, key, name, created, updated)
-            TYPE_APPLICATION -> cmdbObject = Application(id, key, name, created, updated)
+            CmdbStatic.TYPE_DATABASE -> cmdbObject = Database(id, key, name, created, updated)
+            CmdbStatic.TYPE_APPLICATION -> cmdbObject = Application(id, key, name, created, updated)
             CmdbStatic.TYPE_SERVER -> cmdbObject = Server(id, key, name, created, updated)
             CmdbStatic.TYPE_ENVIRONMENT -> {
                 val businessGroup = if(hasValue(node, CmdbStatic.BUSINESSGROUP))
@@ -81,15 +61,15 @@ class CmdbObjectBuilder {
                 cmdbObject = Environment(id, key, name, created, updated, businessGroup)
             } //TODO Implement business groupt
             CmdbStatic.TYPE_BUSINESSGROUP -> cmdbObject = BusinessGroup(id, key, name, created, updated)
-            TYPE_NODE_MANAGER_DEPLOYMENT -> {
-                val applications= if(node.has(APPLICATIONS) && node.get(APPLICATIONS) != "")
-                    getJsonObjectOrArray(node.get(APPLICATIONS)) as MutableList<Application> else ArrayList()
-                val artifacts = if(node.has(ARTIFACTS) && node.get(ARTIFACTS) != "")
-                    getJsonObjectOrArray(node.get(ARTIFACTS)) as MutableList<Artifact> else ArrayList()
-                val databases = if(node.has(DATABASES)  && node.get(DATABASES) != "")
-                    getJsonObjectOrArray(node.get(DATABASES)) as MutableList<Database> else ArrayList()
-                val applicationInstances = if(node.has(APPLICATION_INSTANCES)  && node.get(APPLICATION_INSTANCES) != "")
-                    getJsonObjectOrArray(node.get(APPLICATION_INSTANCES)) as MutableList<ApplicationInstance> else ArrayList()
+            CmdbStatic.TYPE_NODE_MANAGER_DEPLOYMENT -> {
+                val applications= if(node.has(CmdbStatic.APPLICATIONS) && node.get(CmdbStatic.APPLICATIONS) != "")
+                    getJsonObjectOrArray(node.get(CmdbStatic.APPLICATIONS)) as MutableList<Application> else ArrayList()
+                val artifacts = if(node.has(CmdbStatic.ARTIFACTS) && node.get(CmdbStatic.ARTIFACTS) != "")
+                    getJsonObjectOrArray(node.get(CmdbStatic.ARTIFACTS)) as MutableList<Artifact> else ArrayList()
+                val databases = if(node.has(CmdbStatic.DATABASES)  && node.get(CmdbStatic.DATABASES) != "")
+                    getJsonObjectOrArray(node.get(CmdbStatic.DATABASES)) as MutableList<Database> else ArrayList()
+                val applicationInstances = if(node.has(CmdbStatic.APPLICATION_INSTANCES)  && node.get(CmdbStatic.APPLICATION_INSTANCES) != "")
+                    getJsonObjectOrArray(node.get(CmdbStatic.APPLICATION_INSTANCES)) as MutableList<ApplicationInstance> else ArrayList()
 
                 cmdbObject = NodeManagerDeployment(id, key, name, created, updated, applications, artifacts, databases, applicationInstances)
             }
@@ -99,10 +79,10 @@ class CmdbObjectBuilder {
 
     fun constructChildNode(node: JSONObject) : BaseCMDBObject?{
         if(hasValue(node, CmdbStatic.OBJECT_KEY)) {
-            val key = node.getString(OBJECT_KEY)
+            val key = node.getString(CmdbStatic.OBJECT_KEY)
             val child = cmdbClient.findByKey(key) ?: return null
             if (child.isEmpty) return null
-            return construct(child)
+            return buildCmdObject(child)
         }else{
             return null
         }
@@ -110,16 +90,20 @@ class CmdbObjectBuilder {
 
     /**If only one instance is present in CMDB, it is returned as single JSONObject, while with more than one instance it is returned as JSONArray*/
     private fun getJsonObjectOrArray(node: Any) : MutableList<BaseCMDBObject> {
+        val list = ArrayList<BaseCMDBObject>()
         when(node.javaClass){
             JSONObject::class.java -> {
-                val list = ArrayList<BaseCMDBObject>()
                 constructChildNode(node as JSONObject)?.let { list.add(it) }
-                return list
             }
-            JSONArray::class.java -> return (node as JSONArray).map { constructChildNode(it as JSONObject) as BaseCMDBObject }.toMutableList()
+            JSONArray::class.java -> {
+                (node as JSONArray).forEach {
+                    val child = constructChildNode(it as JSONObject)
+                    if(child != null) list.add(child)
+                }
+            }
 
         }
-        return ArrayList()
+        return list
     }
 
     private fun hasValue(node: JSONObject, propertyName: String) : Boolean{

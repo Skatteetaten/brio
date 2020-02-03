@@ -4,25 +4,80 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
+import io.mockk.every
+import io.mockk.mockk
 import no.skatteetaten.aurora.brio.domain.Application
 import no.skatteetaten.aurora.brio.domain.Artifact
 import no.skatteetaten.aurora.brio.domain.BaseCMDBObject
 import no.skatteetaten.aurora.brio.domain.NodeManagerDeployment
 import org.json.JSONObject
+import org.junit.Before
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
-import org.springframework.test.context.junit.jupiter.SpringExtension
-
-@ExtendWith(SpringExtension::class)
-@Import(CmdbObjectBuilder::class, CMDBClient::class)
 internal class CmdbObjectBuilderTest {
 
-    @Autowired
-    lateinit var builder: CmdbObjectBuilder
+    val cmdbClient = mockk<CMDBClient>()
+
+    var builder = CmdbObjectBuilder(cmdbClient)
+
+
+    @Before
+    fun init(){
+        every { cmdbClient.findByKey("NOD1-AP1") } returns JSONObject("""
+            {
+                "Created": "31/01/20 15:09",
+                "Key": "NOD1-AP1",
+                "Name": "TestApp",
+                "Updated": "31/01/20 15:09",
+                "id": 1,
+                "objectType": "Application"
+            }
+        """)
+
+        every { cmdbClient.findByKey("NOD1-A1") } returns JSONObject("""
+          {
+            "ArtifactID": "skattefinn-leveransepakke",
+            "Created": "20/01/20 14:16",
+            "GroupId": "ske.arbeidsflate.skattefinn",
+            "Key": "NOD1-A1",
+            "Name": "artifact1",
+            "PartOf": "",
+            "Updated": "22/01/20 14:09",
+            "Version": "0.0.1",
+            "id": 1,
+            "objectType": "Artifact"
+          }
+        """)
+
+        every { cmdbClient.findByKey("NOD1-A2") } returns JSONObject("""
+          {
+            "ArtifactID": "skattefinn-leveransepakke",
+            "Created": "20/01/20 14:16",
+            "GroupId": "ske.arbeidsflate.skattefinn",
+            "Key": "NOD1-A2",
+            "Name": "artifact2",
+            "PartOf": "",
+            "Updated": "22/01/20 14:09",
+            "Version": "0.0.1",
+            "id": 2,
+            "objectType": "Artifact"
+          }
+        """)
+
+
+        every{ cmdbClient.findByKey("NOD1-D1")} returns JSONObject("""
+          {
+            "Created": "31/01/20 15:09",
+            "Key": "NOD1-D1",
+            "Name": "MyDBTest",
+            "Updated": "31/01/20 15:09",
+            "id": 1,
+            "objectType": "Database"
+          }
+        """)
+    }
+
 
     @Test
     fun `construct simple object`() {
@@ -37,59 +92,25 @@ internal class CmdbObjectBuilderTest {
             "id": 69461, 
             "objectType": "Artifact"
           }"""
-        val obj = builder.construct(jsonString)
+        val obj = builder.buildCmdObject(jsonString)
         assertNotNull(obj)
         assertThat(obj).isInstanceOf(Artifact::class)
     }
 
     @Test
     fun `construct complete NodeManagerDeployment object`() {
+        init()
+
         val jsonString = """
             {
                 "ApplicationInstances": "",
-                "Applications": {
-                  "created": "23/01/20 16:28",
-                  "hasAvatar": false,
-                  "id": 69521,
-                  "label": "Brio",
-                  "name": "Brio",
-                  "objectKey": "NOD1-69521",
-                  "timestamp": 1579793286432,
-                  "updated": "23/01/20 16:28"
-                },
+                "Applications": { "objectKey": "NOD1-AP1" },
                 "Artifacts": [
-                  {
-                    "created": "20/01/20 14:16",
-                    "hasAvatar": false,
-                    "id": 69462,
-                    "label": "artifact2",
-                    "name": "artifact2",
-                    "objectKey": "NOD1-69462",
-                    "timestamp": 1579698564438,
-                    "updated": "22/01/20 14:09"
-                  },
-                  {
-                    "created": "23/01/20 15:16",
-                    "hasAvatar": false,
-                    "id": 69516,
-                    "label": "JFW_Test artifact",
-                    "name": "JFW_Test artifact",
-                    "objectKey": "NOD1-69516",
-                    "timestamp": 1579788984273,
-                    "updated": "23/01/20 15:16"
-                  }
+                  { "objectKey": "NOD1-A1"}, 
+                  { "objectKey": "NOD1-A2"}
                 ],
                 "Created": "23/01/20 18:00",
-                "Databases": {
-                  "created": "27/01/20 12:51",
-                  "hasAvatar": false,
-                  "id": 69921,
-                  "label": "testDB",
-                  "name": "testDB",
-                  "objectKey": "NOD1-69921",
-                  "timestamp": 1580125918103,
-                  "updated": "27/01/20 12:51"
-                },
+                "Databases": { "objectKey": "NOD1-D1" },
                 "Key": "NOD1-69527",
                 "Name": "TestDeployment",
                 "Updated": "27/01/20 12:58",
@@ -97,7 +118,7 @@ internal class CmdbObjectBuilderTest {
                 "objectType": "NodeManagerDeployment"
               }
         """
-        val obj = builder.construct(jsonString)
+        val obj = builder.buildCmdObject(jsonString)
         assertNotNull(obj)
         assertThat(obj).isInstanceOf(NodeManagerDeployment::class)
         assertThat((obj as NodeManagerDeployment).applications.size).isEqualTo(1)
@@ -108,28 +129,20 @@ internal class CmdbObjectBuilderTest {
 
     @Test
     fun testConstruct() {
+        init()
         val jsonString = """{
             "ArtifactID": "skattefinn-leveransepakke", 
             "Created": "20/01/20 14:16", 
             "GroupId": "ske.arbeidsflate.skattefinn", 
             "Key": "NOD1-69461", 
             "Name": "artifact1", 
-            "PartOf": {
-              "created": "22/01/20 14:08", 
-              "hasAvatar": false, 
-              "id": 69501, 
-              "label": "skattefinn-leveransepakke", 
-              "name": "skattefinn-leveransepakke", 
-              "objectKey": "NOD1-69501", 
-              "timestamp": 1579698533381, 
-              "updated": "22/01/20 14:08"
-            }, 
+            "PartOf": { "objectKey": "NOD1-AP1" }, 
             "Updated": "22/01/20 14:09", 
             "Version": "0.0.1", 
             "id": 69461, 
             "objectType": "Artifact"
           }"""
-        val obj = builder.construct(jsonString)
+        val obj = builder.buildCmdObject(jsonString)
         assertNotNull(obj)
         assertThat(obj).isInstanceOf(Artifact::class)
         if(obj is Artifact){
@@ -140,13 +153,14 @@ internal class CmdbObjectBuilderTest {
 
     @Test
     fun constructChildNode() {
+        init()
         val childJson = """{
                 "created": "22/01/20 14:08",
                 "hasAvatar": false,
                 "id": 69501,
                 "label": "skattefinn-leveransepakke",
                 "name": "skattefinn-leveransepakke",
-                "objectKey": "NOD1-69501",
+                "objectKey": "NOD1-AP1",
                 "timestamp": 1579698533381,
                 "updated": "22/01/20 14:08"
             }"""

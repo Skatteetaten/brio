@@ -53,10 +53,10 @@ data class NodeManagerDeployment (
 
     override fun toMinimalJson(): JSONObject {
         val json = super.toMinimalJson()
-        applications.forEach { json.append("Applications", it.id) }
-        artifacts.forEach{ json.append("Artifacts", it.id) }
-        databases.forEach{ json.append("Databases", it.id) }
-        if(applicationInstances.isNotEmpty()) json.append("ApplicationInstances",  applicationInstances.map {it.id}.joinToString(","))
+        applications.forEach { json.append(CmdbStatic.APPLICATIONS, it.id) }
+        artifacts.forEach{ json.append(CmdbStatic.ARTIFACTS, it.id) }
+        databases.forEach{ json.append(CmdbStatic.DATABASES, it.id) }
+        applicationInstances.forEach{ json.append(CmdbStatic.APPLICATION_INSTANCES, it.id) }
         return json
     }
 }
@@ -95,11 +95,11 @@ data class Artifact (
 
     override fun toMinimalJson(): JSONObject {
         val json = super.toMinimalJson()
-        json.append("GroupId", groupId)
-        json.append("Version", version)
-        json.append("ArtifactID", artifactId)
+        json.append(CmdbStatic.GROUP_ID, groupId)
+        json.append(CmdbStatic.VERSION, version)
+        json.append(CmdbStatic.ARTIFACT_ID, artifactId)
         if(partOf != null) {
-            json.append("PartOf", partOf.id)
+            json.append(CmdbStatic.PART_OF, partOf.id)
         }
         return json
     }
@@ -147,7 +147,7 @@ data class Environment (
     override fun toMinimalJson(): JSONObject {
         val json = super.toMinimalJson()
         if(businessGroup != null) {
-            json.append("BusinessGroup", businessGroup.id)
+            json.append(CmdbStatic.BUSINESSGROUP, businessGroup.id)
         }
         return json
     }
@@ -184,8 +184,8 @@ data class ApplicationInstance (
 
     override fun toMinimalJson(): JSONObject {
         val json = super.toMinimalJson()
-        if(runningOn != null) json.append("RunningOn", runningOn?.id)
-        if(environment != null) json.append("Environment", environment?.id)
+        if(runningOn != null) json.append(CmdbStatic.RUNNING_ON, runningOn?.id)
+        if(environment != null) json.append(CmdbStatic.ENVIRONMENT, environment?.id)
         return json
     }
 }
@@ -208,7 +208,7 @@ abstract class BaseCMDBObject (
 
     open fun toMinimalJson() : JSONObject{
         val jsonObject = JSONObject()
-        jsonObject.append("Name", name)
+        jsonObject.append(CmdbStatic.NAME, name)
         return jsonObject
     }
 }

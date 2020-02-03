@@ -60,7 +60,7 @@ internal class NodeManagerDeploymentServiceTest {
         assertNotNull(result)
         assertThat(result2).isEqualTo(result)
 
-        if(result != null){
+        if(result != null && false){
             result.applicationInstances.forEach {
                 val runningOn = it.runningOn
                 if(runningOn != null) service.deleteNpmObject(runningOn)

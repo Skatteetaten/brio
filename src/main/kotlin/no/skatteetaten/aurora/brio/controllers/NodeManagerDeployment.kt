@@ -15,9 +15,9 @@ private val logger = KotlinLogging.logger {}
  */
 @RestController
 class NodeManagerDeployment(
-    private val restTemplate: RestTemplate,
+    /*private val restTemplate: RestTemplate,
     private val metrics: AuroraMetrics,
-    private val nodeManagerDeploymentService: NodeManagerDeploymentService
+    private val nodeManagerDeploymentService: NodeManagerDeploymentService*/
 ) {
 
     @PostMapping("/api/nodeManagerApplicationDeployment")

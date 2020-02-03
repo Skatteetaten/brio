@@ -36,9 +36,9 @@ internal class CMDBClientTest {
         assertThat(response3.isEmpty).isFalse()
         println(response3[0].toString())
 
-        val response_none = service.findObjectOfTypeByName(CmdbType.Artifact, "No_artifact")
-        assertNotNull(response_none)
-        assertThat(response_none.isEmpty).isTrue()
+        val responseNone = service.findObjectOfTypeByName(CmdbType.Artifact, "No_artifact")
+        assertNotNull(responseNone)
+        assertThat(responseNone.isEmpty).isTrue()
     }
 
     @Test
@@ -52,11 +52,11 @@ internal class CMDBClientTest {
 
     @Test
     fun createApplication() {
-        val application_new = Application(null,null, "Brio", LocalDateTime.now(), LocalDateTime.now())
-        val application_existing = Application(69501,"NOD1-69501", "skattefinn", LocalDateTime.now(), LocalDateTime.now())
-        assertThat{service.createObject(application_existing)}.isFailure()
+        val applicationNew = Application(null,null, "Brio", LocalDateTime.now(), LocalDateTime.now())
+        val applicationExisting = Application(69501,"NOD1-69501", "skattefinn", LocalDateTime.now(), LocalDateTime.now())
+        assertThat{service.createObject(applicationExisting)}.isFailure()
 
-        val createdApplication = service.createObject(application_new)
+        val createdApplication = service.createObject(applicationNew)
         println(createdApplication)
         assertNotNull(createdApplication)
         service.deleteObject(CmdbType.Application, createdApplication)

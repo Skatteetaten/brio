@@ -18,19 +18,23 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 class CMDBClient {
-    val ACCESS_TOKEN = "DqhbstdJjhgo6ke6Rj1KbjdhA2qbUv0s"
-    val BASE_URL = "https://ref-cmdb.sits.no"
-    val SCHEMA_ID = 181
-    val SCHEMA_URL = "${BASE_URL}/auto/schema/${SCHEMA_ID}"
+    companion object {
+        const val ACCESS_TOKEN = "DqhbstdJjhgo6ke6Rj1KbjdhA2qbUv0s"
+        private const val BASE_URL = "https://ref-cmdb.sits.no"
+        private const val SCHEMA_ID = 181
+        const val SCHEMA_URL = "${BASE_URL}/auto/schema/${SCHEMA_ID}"
+    }
 
     fun findByKey(key: String): JSONObject? {
         val iqlUrl = "${SCHEMA_URL}/instance/iql/Key=${key}"
-        return doGet(iqlUrl).getJSONObject(0);
+        val response =  doGet(iqlUrl)
+        return if(! response.isEmpty) response.getJSONObject(0) else null
     }
 
     fun findById(id: Int): JSONObject? {
         val iqlUrl = "${SCHEMA_URL}/instance/iql/objectId=${id}"
-        return doGet(iqlUrl).getJSONObject(0);
+        val response =  doGet(iqlUrl)
+        return if(! response.isEmpty) response.getJSONObject(0) else null
     }
 
     fun findObjectOfTypeByName(type: CmdbType, name: String): JSONArray {

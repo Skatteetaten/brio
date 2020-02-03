@@ -41,11 +41,14 @@ class Config {
 @AutoConfigureMockRestServiceServer
 class NodeManagerDeploymentTest : AbstractController() {
 
+/*
     @Autowired
     private lateinit var server: MockRestServiceServer
 
     @MockBean
     private lateinit var nodeManagerDeploymentService: NodeManagerDeploymentService
+
+ */
 
     @Test
     fun `Test creation of new NodeManager deployment`() {
