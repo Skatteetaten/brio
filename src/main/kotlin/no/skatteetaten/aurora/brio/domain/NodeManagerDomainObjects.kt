@@ -5,8 +5,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.json.JSONObject
 import java.time.LocalDateTime
 
-
-object CmdbStatic{
+object CmdbStatic {
     const val OBJECT_TYPE = "objectType"
     const val ID = "id"
     const val KEY = "Key"
@@ -37,176 +36,164 @@ object CmdbStatic{
     const val TYPE_BUSINESSGROUP = "BusinessGroup"
 }
 
-data class NodeManagerDeployment (
-        override var id : Int? = null,
-        override var key: String? = null,
-        override val name: String,
-        override var created: LocalDateTime?,
-        override var updated: LocalDateTime?,
-        var applications: MutableList<Application>,
-        var artifacts: MutableList<Artifact>,
-        var databases: MutableList<Database>,
-        var applicationInstances: MutableList<ApplicationInstance>
+data class NodeManagerDeployment(
+    override var id: Int? = null,
+    override var key: String? = null,
+    override val name: String,
+    override var created: LocalDateTime?,
+    override var updated: LocalDateTime?,
+    var applications: MutableList<Application>,
+    var artifacts: MutableList<Artifact>,
+    var databases: MutableList<Database>,
+    var applicationInstances: MutableList<ApplicationInstance>
 ) : BaseCMDBObject(id, key, name, created, updated) {
     constructor(name: String) : this(null, null, name, null, null, ArrayList(), ArrayList(), ArrayList(), ArrayList())
-    override  val objectType = CmdbType.NodeManagemerDeployment
 
+    override val objectType = CmdbType.NodeManagemerDeployment
     override fun toMinimalJson(): JSONObject {
         val json = super.toMinimalJson()
         applications.forEach { json.append(CmdbStatic.APPLICATIONS, it.id) }
-        artifacts.forEach{ json.append(CmdbStatic.ARTIFACTS, it.id) }
-        databases.forEach{ json.append(CmdbStatic.DATABASES, it.id) }
-        applicationInstances.forEach{ json.append(CmdbStatic.APPLICATION_INSTANCES, it.id) }
+        artifacts.forEach { json.append(CmdbStatic.ARTIFACTS, it.id) }
+        databases.forEach { json.append(CmdbStatic.DATABASES, it.id) }
+        applicationInstances.forEach { json.append(CmdbStatic.APPLICATION_INSTANCES, it.id) }
         return json
     }
 }
 
 data class Application(
-        override var id : Int? = null,
-        override var key: String? = null,
-        override val name: String,
-        override var created: LocalDateTime? = null,
-        override var updated: LocalDateTime? = null
+    override var id: Int? = null,
+    override var key: String? = null,
+    override val name: String,
+    override var created: LocalDateTime? = null,
+    override var updated: LocalDateTime? = null
 ) : BaseCMDBObject(id, key, name, created, updated) {
     constructor(name: String) : this(null, null, name, null, null)
-    constructor(origin: Application, id: Int) :
-            this(id, origin.key, origin.name, origin.created, origin.updated)
-    override  val objectType = CmdbType.Application
+
+    override val objectType = CmdbType.Application
 }
 
-data class Artifact (
-        override var id : Int? = null,
-        override var key: String? = null,
-        override val name: String,
-        override var created: LocalDateTime?,
-        override var updated: LocalDateTime?,
-        val partOf: Application?,
-        val groupId: String,
-        val version: String,
-        val artifactId: String
+data class Artifact(
+    override var id: Int? = null,
+    override var key: String? = null,
+    override val name: String,
+    override var created: LocalDateTime?,
+    override var updated: LocalDateTime?,
+    val partOf: Application?,
+    val groupId: String,
+    val version: String,
+    val artifactId: String
 ) : BaseCMDBObject(id, key, name, created, updated) {
-    constructor(name: String, groupId: String, version: String, artifactId: String):
+    constructor(name: String, groupId: String, version: String, artifactId: String) :
             this(null, null, name, null, null, null, groupId, version, artifactId)
-    constructor(name: String, groupId: String, version: String, artifactId: String, partOf: Application):
-            this(null, null, name, null, null, partOf, groupId, version, artifactId)
-    constructor(origin: Artifact, id: Int) :
-            this(id, origin.key, origin.name, origin.created, origin.updated, origin.partOf, origin.groupId, origin.version, origin.artifactId)
-    override  val objectType = CmdbType.Artifact
+
+    override val objectType = CmdbType.Artifact
 
     override fun toMinimalJson(): JSONObject {
         val json = super.toMinimalJson()
         json.append(CmdbStatic.GROUP_ID, groupId)
         json.append(CmdbStatic.VERSION, version)
         json.append(CmdbStatic.ARTIFACT_ID, artifactId)
-        if(partOf != null) {
+        if (partOf != null) {
             json.append(CmdbStatic.PART_OF, partOf.id)
         }
         return json
     }
 }
 
-data class Database (
-        override var id : Int? = null,
-        override var key: String? = null,
-        override val name: String,
-        override var created: LocalDateTime?,
-        override var updated: LocalDateTime?
+data class Database(
+    override var id: Int? = null,
+    override var key: String? = null,
+    override val name: String,
+    override var created: LocalDateTime?,
+    override var updated: LocalDateTime?
 ) : BaseCMDBObject(id, key, name, created, updated) {
     constructor(name: String) : this(null, null, name, null, null)
-    constructor(origin: Database, id: Int) :
-            this(id, origin.key, origin.name, origin.created, origin.updated)
-    override  val objectType = CmdbType.Database
+
+    override val objectType = CmdbType.Database
 }
 
-data class Server (
-        override var id : Int? = null,
-        override var key: String? = null,
-        override val name: String,
-        override var created: LocalDateTime?,
-        override var updated: LocalDateTime?
+data class Server(
+    override var id: Int? = null,
+    override var key: String? = null,
+    override val name: String,
+    override var created: LocalDateTime?,
+    override var updated: LocalDateTime?
 ) : BaseCMDBObject(id, key, name, created, updated) {
     constructor(name: String) : this(null, null, name, null, null)
-    constructor(origin: Server, id: Int) :
-            this(id, origin.key, origin.name, origin.created, origin.updated)
-    override  val objectType = CmdbType.Server
+
+    override val objectType = CmdbType.Server
 }
 
-data class Environment (
-        override var id : Int? = null,
-        override var key: String? = null,
-        override val name: String,
-        override var created: LocalDateTime?,
-        override var updated: LocalDateTime?,
-        val businessGroup: BusinessGroup?
+data class Environment(
+    override var id: Int? = null,
+    override var key: String? = null,
+    override val name: String,
+    override var created: LocalDateTime?,
+    override var updated: LocalDateTime?,
+    val businessGroup: BusinessGroup?
 ) : BaseCMDBObject(id, key, name, created, updated) {
     constructor(name: String, businessGroup: BusinessGroup) : this(null, null, name, null, null, businessGroup)
-    constructor(name: String) : this(null, null, name, null, null, null)
-    constructor(origin: Environment, id: Int) :
-            this(id, origin.key, origin.name, origin.created, origin.updated, origin.businessGroup)
-    override  val objectType = CmdbType.Environment
+
+    override val objectType = CmdbType.Environment
     override fun toMinimalJson(): JSONObject {
         val json = super.toMinimalJson()
-        if(businessGroup != null) {
+        if (businessGroup != null) {
             json.append(CmdbStatic.BUSINESSGROUP, businessGroup.id)
         }
         return json
     }
 }
 
-
-data class BusinessGroup (
-        override var id : Int? = null,
-        override var key: String? = null,
-        override val name: String,
-        override var created: LocalDateTime?,
-        override var updated: LocalDateTime?
+data class BusinessGroup(
+    override var id: Int? = null,
+    override var key: String? = null,
+    override val name: String,
+    override var created: LocalDateTime?,
+    override var updated: LocalDateTime?
 ) : BaseCMDBObject(id, key, name, created, updated) {
     constructor(name: String) : this(null, null, name, null, null)
-    constructor(origin: BusinessGroup, id: Int) :
-            this(id, origin.key, origin.name, origin.created, origin.updated)
-    override  val objectType = CmdbType.BusinessGroup
+
+    override val objectType = CmdbType.BusinessGroup
 }
 
-data class ApplicationInstance (
-        override var id: Int? = null,
-        override var key: String? = null,
-        override val name: String,
-        override var created: LocalDateTime?,
-        override var updated: LocalDateTime?,
-        var runningOn: Server?,
-        var environment: Environment?
+data class ApplicationInstance(
+    override var id: Int? = null,
+    override var key: String? = null,
+    override val name: String,
+    override var created: LocalDateTime?,
+    override var updated: LocalDateTime?,
+    var runningOn: Server?,
+    var environment: Environment?
 ) : BaseCMDBObject(id, key, name, created, updated) {
-    constructor(name: String, runningOn: Server?, environment: Environment?):
+    constructor(name: String, runningOn: Server?, environment: Environment?) :
             this(null, null, name, null, null, runningOn, environment)
-    constructor(origin: ApplicationInstance, id: Int) :
-            this(id, origin.key, origin.name, origin.created, origin.updated, origin.runningOn, origin.environment)
-    override  val objectType = CmdbType.ApplicationInstance
+
+    override val objectType = CmdbType.ApplicationInstance
 
     override fun toMinimalJson(): JSONObject {
         val json = super.toMinimalJson()
-        if(runningOn != null) json.append(CmdbStatic.RUNNING_ON, runningOn?.id)
-        if(environment != null) json.append(CmdbStatic.ENVIRONMENT, environment?.id)
+        if (runningOn != null) json.append(CmdbStatic.RUNNING_ON, runningOn?.id)
+        if (environment != null) json.append(CmdbStatic.ENVIRONMENT, environment?.id)
         return json
     }
 }
 
-
-abstract class BaseCMDBObject (
+abstract class BaseCMDBObject(
     open var id: Int? = null,
     open var key: String? = null,
     open val name: String,
     open var created: LocalDateTime? = null,
     open var updated: LocalDateTime? = null
-){
+) {
     abstract val objectType: CmdbType
 
-    fun toJson() : JSONObject {
+    fun toJson(): JSONObject {
         val objectMapper = ObjectMapper().registerModule(KotlinModule())
         val strJson = objectMapper.writeValueAsString(this)
         return JSONObject(strJson)
     }
 
-    open fun toMinimalJson() : JSONObject{
+    open fun toMinimalJson(): JSONObject {
         val jsonObject = JSONObject()
         jsonObject.append(CmdbStatic.NAME, name)
         return jsonObject

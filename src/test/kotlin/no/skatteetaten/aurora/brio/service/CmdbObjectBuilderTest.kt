@@ -11,19 +11,18 @@ import no.skatteetaten.aurora.brio.domain.Artifact
 import no.skatteetaten.aurora.brio.domain.BaseCMDBObject
 import no.skatteetaten.aurora.brio.domain.NodeManagerDeployment
 import org.json.JSONObject
-import org.junit.Before
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class CmdbObjectBuilderTest {
 
-    val cmdbClient = mockk<CMDBClient>()
+    private val cmdbClient = mockk<CMDBClient>()
+    private var builder = CmdbObjectBuilder()
 
-    var builder = CmdbObjectBuilder(cmdbClient)
-
-
-    @Before
-    fun init(){
+    @BeforeEach
+    fun init() {
+        builder.cmdbClient = cmdbClient
         every { cmdbClient.findByKey("NOD1-AP1") } returns JSONObject("""
             {
                 "Created": "31/01/20 15:09",
@@ -65,8 +64,7 @@ internal class CmdbObjectBuilderTest {
           }
         """)
 
-
-        every{ cmdbClient.findByKey("NOD1-D1")} returns JSONObject("""
+        every { cmdbClient.findByKey("NOD1-D1") } returns JSONObject("""
           {
             "Created": "31/01/20 15:09",
             "Key": "NOD1-D1",
@@ -77,7 +75,6 @@ internal class CmdbObjectBuilderTest {
           }
         """)
     }
-
 
     @Test
     fun `construct simple object`() {
@@ -99,8 +96,6 @@ internal class CmdbObjectBuilderTest {
 
     @Test
     fun `construct complete NodeManagerDeployment object`() {
-        init()
-
         val jsonString = """
             {
                 "ApplicationInstances": "",
@@ -124,12 +119,10 @@ internal class CmdbObjectBuilderTest {
         assertThat((obj as NodeManagerDeployment).applications.size).isEqualTo(1)
         assertThat(obj.applications[0]).isInstanceOf(Application::class.java)
         assertThat(obj.artifacts.size).isEqualTo(2)
-
     }
 
     @Test
     fun testConstruct() {
-        init()
         val jsonString = """{
             "ArtifactID": "skattefinn-leveransepakke", 
             "Created": "20/01/20 14:16", 
@@ -145,15 +138,13 @@ internal class CmdbObjectBuilderTest {
         val obj = builder.buildCmdObject(jsonString)
         assertNotNull(obj)
         assertThat(obj).isInstanceOf(Artifact::class)
-        if(obj is Artifact){
+        if (obj is Artifact) {
             assertThat(obj.partOf).isNotNull()
         }
-
     }
 
     @Test
     fun constructChildNode() {
-        init()
         val childJson = """{
                 "created": "22/01/20 14:08",
                 "hasAvatar": false,
@@ -167,7 +158,7 @@ internal class CmdbObjectBuilderTest {
         val node = JSONObject(childJson)
         val obj = builder.constructChildNode(node)
         assertNotNull(obj)
-        if(obj != null) {
+        if (obj != null) {
             assertThat(obj).isInstanceOf(BaseCMDBObject::class)
         }
     }

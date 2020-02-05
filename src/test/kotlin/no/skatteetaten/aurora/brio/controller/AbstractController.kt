@@ -17,8 +17,6 @@ abstract class AbstractController {
 
     @Autowired
     protected lateinit var context: WebApplicationContext
-
-
     protected lateinit var mvc: MockMvc
 
     @BeforeEach
