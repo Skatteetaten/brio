@@ -7,8 +7,8 @@ def config = [
     credentialsId  : "github",
     javaVersion    : 11,
     testStages     : [[
-                          auroraConfigEnvironment: 'st-refapp-kotlin',
-                          applicationUnderTest   : "referanse-kotlin",
+                          auroraConfigEnvironment: 'st-brio',
+                          applicationUnderTest   : "brio",
                           testSequence           : [
                               [
                                   stageType : 'postman',
