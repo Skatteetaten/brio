@@ -6,6 +6,8 @@ import no.skatteetaten.aurora.brio.domain.CmdbStatic
 import no.skatteetaten.aurora.brio.domain.CmdbType
 import org.json.JSONArray
 import org.json.JSONObject
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -17,38 +19,39 @@ import org.springframework.web.client.RestTemplate
 private val logger = KotlinLogging.logger {}
 
 @Service
+@EnableConfigurationProperties
 class CMDBClient {
-    companion object {
-        const val ACCESS_TOKEN = "DqhbstdJjhgo6ke6Rj1KbjdhA2qbUv0s"
-        private const val BASE_URL = "https://ref-cmdb.sits.no"
-        private const val SCHEMA_ID = 181
-        const val SCHEMA_URL = "$BASE_URL/auto/schema/$SCHEMA_ID"
-    }
+
+    @Value("\${integrations.cmdb.url}")
+    private lateinit var schemaURL: String
+
+    @Value("\${integrations.cmdb.accessToken}")
+    private lateinit var accessToken: String
 
     fun findByKey(key: String): JSONObject? {
-        val iqlUrl = "$SCHEMA_URL/instance/iql/Key=$key"
+        val iqlUrl = "$schemaURL/instance/iql/Key=$key"
         val response = doGet(iqlUrl)
         return if (! response.isEmpty) response.getJSONObject(0) else null
     }
 
     fun findById(id: Int): JSONObject? {
-        val iqlUrl = "$SCHEMA_URL/instance/iql/objectId=$id"
+        val iqlUrl = "$schemaURL/instance/iql/objectId=$id"
         val response = doGet(iqlUrl)
         return if (! response.isEmpty) response.getJSONObject(0) else null
     }
 
     fun findObjectOfTypeByName(type: CmdbType, name: String): JSONArray {
-        val iqlUrl = "$SCHEMA_URL/instance/iql/objectTypeId=${type.id} AND Name=$name"
+        val iqlUrl = "$schemaURL/instance/iql/objectTypeId=${type.id} AND Name=$name"
         return doGet(iqlUrl)
     }
 
     fun findObjectOfTypeByArtifactIdAndGroupId(type: CmdbType, artifactId: String, groupId: String): JSONArray {
-        val iqlUrl = "$SCHEMA_URL/instance/iql/objectTypeId=${type.id} AND ArtifactID=$artifactId AND GroupId=$groupId"
+        val iqlUrl = "$schemaURL/instance/iql/objectTypeId=${type.id} AND ArtifactID=$artifactId AND GroupId=$groupId"
         return doGet(iqlUrl)
     }
 
     fun findObjectOfTypeByByArtifactIdAndGroupIdVersion(type: CmdbType, artifactId: String, groupId: String, version: String): JSONArray {
-        val iqlUrl = "$SCHEMA_URL/instance/iql/objectTypeId=${type.id} AND ArtifactID=$artifactId AND GroupId=$groupId AND Version=$version"
+        val iqlUrl = "$schemaURL/instance/iql/objectTypeId=${type.id} AND ArtifactID=$artifactId AND GroupId=$groupId AND Version=$version"
         return doGet(iqlUrl)
     }
 
@@ -64,7 +67,7 @@ class CMDBClient {
         if (instance.has("Key") && instance.has("Key") != null) {
             throw IllegalArgumentException("Can not create new objects in CMDB if it already exists. Existing key ${instance.getString("key") }")
         }
-        val postUrl = "$SCHEMA_URL/type/${type.id}/instance"
+        val postUrl = "$schemaURL/type/${type.id}/instance"
         return doPost(postUrl, instance)
     }
 
@@ -78,7 +81,7 @@ class CMDBClient {
             else -> return false
         }
 
-        val delUrl = "$SCHEMA_URL/type/${type.id}/instance/$id"
+        val delUrl = "$schemaURL/type/${type.id}/instance/$id"
         doDelete(delUrl)
         return true
     }
@@ -121,7 +124,7 @@ class CMDBClient {
     private fun getHeaders(): HttpHeaders {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        headers.set("Authorization", "Bearer $ACCESS_TOKEN")
+        headers.set("Authorization", "Bearer $accessToken")
         return headers
     }
 }

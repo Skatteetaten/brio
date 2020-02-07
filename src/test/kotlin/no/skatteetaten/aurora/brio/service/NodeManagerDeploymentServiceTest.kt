@@ -4,15 +4,15 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
+import no.skatteetaten.aurora.brio.TestApp
 import no.skatteetaten.aurora.brio.domain.*
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@ExtendWith(SpringExtension::class)
+@SpringBootTest(classes = [TestApp::class])
 @Import(NodeManagerDeploymentService::class, CMDBClient::class, CmdbObjectBuilder::class)
 internal class NodeManagerDeploymentServiceTest {
 
@@ -23,7 +23,7 @@ internal class NodeManagerDeploymentServiceTest {
     fun dummytest() {
     }
 
-    // @Test
+    @Test
     fun newNodeManagerDeployment_Simple() {
         val deployment = NodeManagerDeployment("TestDeployment")
         val result = service.newNodeManagerDeployment(deployment)
@@ -36,9 +36,8 @@ internal class NodeManagerDeploymentServiceTest {
         if (result != null) service.deleteNpmObject(result)
     }
 
-    // @Test
+    @Test
     fun newNodeManagerDeployment_Full() {
-
         val deployment = NodeManagerDeployment("TestDeployment")
         deployment.applications.add(Application("TestApp"))
         deployment.artifacts.add((Artifact("TestArtifact", "no.jfw.test", "0.0.1", "TestArtifact")))
