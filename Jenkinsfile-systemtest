@@ -6,7 +6,6 @@ def config = [
     affiliation    : 'paas',
     credentialsId  : "github",
     javaVersion    : 11,
-    nodeVersion    : '10',
     testStages     : [[
                           auroraConfigEnvironment: 'st-refapp-kotlin',
                           applicationUnderTest   : "referanse-kotlin",
@@ -29,4 +28,4 @@ def config = [
 fileLoader.withGit(config.pipelineScript, config.scriptVersion) {
   jenkinsfile = fileLoader.load('templates/systemtest')
 }
-jenkinsfile.gradle(config.scriptVersion, config)
+jenkinsfile.run(config.scriptVersion, config)
