@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "config": { "baseURL": "http://localhost:8080/"},
   "scripts": {
-    "test": "npm-run-all fetchCounter",
+    "test": "npm-run-all npmControllerInfo",
     "version": "newman --version",
-    "fetchCounter": "newman run -e src/systemtest/postman/environment.json src/systemtest/postman/fetchCounter.json"
+    "fetchCounter": "newman run -e src/systemtest/postman/environment.json src/systemtest/postman/npmControllerInfo.json"
   },
   "dependencies": {
     "newman": "3.6.0",
