@@ -3,7 +3,6 @@ package no.skatteetaten.aurora.brio.service
 import no.skatteetaten.aurora.brio.domain.*
 import org.json.JSONArray
 import org.json.JSONObject
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

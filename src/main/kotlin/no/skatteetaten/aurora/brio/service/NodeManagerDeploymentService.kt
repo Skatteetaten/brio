@@ -5,13 +5,12 @@ import no.skatteetaten.aurora.brio.domain.BaseCMDBObject
 import no.skatteetaten.aurora.brio.domain.CmdbStatic
 import no.skatteetaten.aurora.brio.domain.NodeManagerDeployment
 import org.json.JSONObject
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 private val logger = KotlinLogging.logger {}
 
 @Component
-class NodeManagerDeploymentService (private val cmdbClient: CMDBClient, private val  cmdbObjectBuilder: CmdbObjectBuilder){
+class NodeManagerDeploymentService(private val cmdbClient: CMDBClient, private val cmdbObjectBuilder: CmdbObjectBuilder) {
 
     fun newNodeManagerDeployment(deployment: NodeManagerDeployment): NodeManagerDeployment? {
         logger.info("Deploying NodeManagerDeployment ${deployment.name}")
