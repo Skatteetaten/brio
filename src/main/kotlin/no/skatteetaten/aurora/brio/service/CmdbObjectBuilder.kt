@@ -9,9 +9,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component
-class CmdbObjectBuilder {
-    @Autowired
-    lateinit var cmdbClient: CMDBClient
+class CmdbObjectBuilder(private val cmdbClient: CMDBClient) {
 
     val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm")
 

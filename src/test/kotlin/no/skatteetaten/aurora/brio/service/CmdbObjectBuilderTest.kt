@@ -18,11 +18,10 @@ import org.junit.jupiter.api.Test
 internal class CmdbObjectBuilderTest {
 
     private val cmdbClient = mockk<CMDBClient>()
-    private var builder = CmdbObjectBuilder()
+    private var builder = CmdbObjectBuilder(cmdbClient)
 
     @BeforeEach
     fun init() {
-        builder.cmdbClient = cmdbClient
         every { cmdbClient.findByKey("NOD1-AP1") } returns JSONObject("""
             {
                 "Created": "31/01/20 15:09",
