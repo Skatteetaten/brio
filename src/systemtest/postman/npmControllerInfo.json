@@ -9,7 +9,7 @@
 		{
 			"name": "getInfo",
 			"request": {
-				"url": "http://{{referanse-kotlin}}/api/info",
+				"url": "http://{{brio}}/api/info",
 				"method": "GET",
 				"header": [
 					{
