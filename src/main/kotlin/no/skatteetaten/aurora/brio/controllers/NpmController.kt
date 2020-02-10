@@ -13,7 +13,8 @@ private val logger = KotlinLogging.logger {}
 @RequestMapping("/api")
 class NodeManagerDeployment {
     @GetMapping("/info")
-    fun getInfo(): String = "Some Info"
+    fun getInfo(): String = "Brio API:\n" +
+            "- [post]:/api//nodeManagerApplicationDeployment - notify of new nodemanager deployment"
 
     @PostMapping("/nodeManagerApplicationDeployment")
     fun createApplicationDeployment(@RequestBody nodeManagerPayload: String): String {

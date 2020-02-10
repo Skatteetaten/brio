@@ -1,0 +1,40 @@
+{
+	"info": {
+		"name": "getInfo",
+		"_postman_id": "f24b09dc-8119-30a9-01cb-4a679ac1f486",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "getInfo",
+			"request": {
+				"url": "http://{{referanse-kotlin}}/api/info",
+				"method": "GET",
+				"header": [
+					{
+						"key": "korrelasjonsid",
+						"value": "isolertsystemtest-{{$guid}}",
+						"description": ""
+					}
+				],
+				"description": ""
+			},
+			"response": []
+		}
+	],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+
+          "var value =  pm.response.json().value;",
+          "tests['Check response starts with 'Brio'] = value.startsWith('Brio');",
+          "pm.environment.set('prevResponse', current);"
+        ]
+      }
+    }
+  ]
+}
