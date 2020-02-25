@@ -2,7 +2,7 @@
   "name": "postman_environment",
   "values": [
     {
-      "key": "referanse-kotlin",
+      "key": "brio",
       "value": "localhost:8080",
       "type": "text",
       "enabled": true

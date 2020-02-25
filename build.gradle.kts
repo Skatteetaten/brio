@@ -5,7 +5,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "8.2.0"
     id("org.sonarqube") version "2.7.1"
 
-    id("org.springframework.boot") version "2.1.8.RELEASE"
+    id("org.springframework.boot") version "2.2.4.RELEASE"
     id("org.asciidoctor.convert") version "2.4.0"
 
     id("com.gorylenko.gradle-git-properties") version "2.1.0"
@@ -22,7 +22,6 @@ dependencies {
 
     testImplementation("com.squareup.okhttp3:mockwebserver:4.2.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.3.50")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("io.projectreactor.addons:reactor-extra:3.2.3.RELEASE")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.codehaus.jackson:jackson-mapper-asl")
@@ -35,4 +34,7 @@ dependencies {
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.19")
     testImplementation("com.nhaarman:mockito-kotlin:1.6.0")
     testImplementation("no.skatteetaten.aurora:mockmvc-extensions-kotlin:1.0.0")
+    testImplementation("no.skatteetaten.aurora:mockmvc-extensions-kotlin:1.0.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.0")
+    testImplementation("com.squareup.okhttp3:okhttp:4.2.0")
 }

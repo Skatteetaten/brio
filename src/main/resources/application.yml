@@ -20,8 +20,8 @@ logging:
 
 integrations:
     cmdb:
-        url: "https://ref-cmdb.sits.no/auto/schema/181"
-        accessToken: "DqhbstdJjhgo6ke6Rj1KbjdhA2qbUv0s"
+        url: "https://cmdb.sits.no/auto/schema/141"
+        accessToken: "QI3KkOnWSvn55I3gODMkoKnlA3m9OW5X"
 ---
 spring:
     profiles: local
