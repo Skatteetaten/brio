@@ -1,5 +1,6 @@
 package no.skatteetaten.aurora.brio.service
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import no.skatteetaten.aurora.brio.domain.BaseCMDBObject
 import no.skatteetaten.aurora.brio.domain.CmdbStatic
@@ -8,10 +9,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
@@ -20,18 +18,27 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 @EnableConfigurationProperties
-class CMDBClient {
-
-    @Value("\${integrations.cmdb.url}")
-    private lateinit var schemaURL: String
-
-    @Value("\${integrations.cmdb.accessToken}")
-    private lateinit var accessToken: String
+class CMDBClient(
+    private val restTemplate: RestTemplate,
+    @Value("\${integrations.cmdb.url}") val schemaURL: String,
+    @Value("\${integrations.cmdb.accessToken}") val accessToken: String
+) {
+    val mapper = CmdbStatic.mapper
 
     fun findByKey(key: String): JSONObject? {
         val iqlUrl = "$schemaURL/instance/iql/Key=$key"
         val response = doGet(iqlUrl)
         return if (! response.isEmpty) response.getJSONObject(0) else null
+    }
+
+    fun findObjectById(id: Int): BaseCMDBObject? {
+        val iqlUrl = "$schemaURL/instance/iql/objectId=$id"
+        val result = doGetStringResult(iqlUrl)
+        return if (result == null || "".equals(result)) null
+        else {
+            val mappedArray: Array<BaseCMDBObject> = mapper.readValue(result)
+            mappedArray[0]
+        }
     }
 
     fun findById(id: Int): JSONObject? {
@@ -94,7 +101,7 @@ class CMDBClient {
     private fun doDelete(url: String): String? {
         val headers = getHeaders()
         val entity = HttpEntity<String>(headers)
-        return RestTemplate().exchange(url, HttpMethod.DELETE, entity, String::class.java).body
+        return restTemplate.exchange(url, HttpMethod.DELETE, entity, String::class.java).body
     }
 
     private fun doPost(url: String, data: JSONObject): JSONObject {
@@ -102,7 +109,7 @@ class CMDBClient {
         val entity = HttpEntity(data.toString(), headers)
 
         val response = try {
-            RestTemplate().exchange(url, HttpMethod.POST, entity, String::class.java)
+            restTemplate.exchange(url, HttpMethod.POST, entity, String::class.java)
         } catch (e: HttpClientErrorException) {
             logger.warn("failed response CMDB for request: $url containing data:\n$data\n" +
                 "Response was: ${e.message}")
@@ -114,11 +121,23 @@ class CMDBClient {
         return JSONObject(body)
     }
 
+    private fun doGetStringResult(url: String): String? {
+        val headers = getHeaders()
+        val entity = HttpEntity<String>(headers)
+        val response = restTemplate.exchange(url, HttpMethod.GET, entity, String::class.java)
+        if (response == null || response.statusCode != HttpStatus.OK) {
+            logger.warn("Error code received from CMDB: ${response.statusCodeValue}\n${response.body}")
+            return null
+        } else {
+            return response.body
+        }
+    }
+
     private fun doGet(url: String): JSONArray {
         val headers = getHeaders()
         val entity = HttpEntity<String>(headers)
-        val response = RestTemplate().exchange(url, HttpMethod.GET, entity, String::class.java).body
-        return JSONArray(response)
+        val response = restTemplate.exchange(url, HttpMethod.GET, entity, String::class.java).body
+        return if (response != null) JSONArray(response) else JSONArray()
     }
 
     private fun getHeaders(): HttpHeaders {

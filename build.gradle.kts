@@ -34,4 +34,7 @@ dependencies {
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.19")
     testImplementation("com.nhaarman:mockito-kotlin:1.6.0")
     testImplementation("no.skatteetaten.aurora:mockmvc-extensions-kotlin:1.0.0")
+    testImplementation("no.skatteetaten.aurora:mockmvc-extensions-kotlin:1.0.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.0")
+    testImplementation("com.squareup.okhttp3:okhttp:4.2.0")
 }

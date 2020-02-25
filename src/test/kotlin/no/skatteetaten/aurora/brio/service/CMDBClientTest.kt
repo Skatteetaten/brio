@@ -27,7 +27,7 @@ internal class CMDBClientTest {
     fun dummytest() {
     }
 
-    @Test
+    // @Test
     fun findObject() {
         val response1 = cmdbClient.findObjectOfTypeByName(CmdbType.Artifact, "artifact1")
         assertNotNull(response1)
@@ -46,7 +46,7 @@ internal class CMDBClientTest {
         assertThat(responseNone.isEmpty).isTrue()
     }
 
-    @Test
+    // @Test
     fun findById() {
         val id = 69461
         val response = cmdbClient.findById(id)
@@ -55,7 +55,7 @@ internal class CMDBClientTest {
         assertThat(response.getInt(CmdbStatic.ID)).isEqualTo(id)
     }
 
-    @Test
+    //  @Test
     fun createApplication() {
         val applicationNew = Application(null, null, "Brio", LocalDateTime.now(), LocalDateTime.now())
         val applicationExisting = Application(69501, "NOD1-69501", "skattefinn", LocalDateTime.now(), LocalDateTime.now())

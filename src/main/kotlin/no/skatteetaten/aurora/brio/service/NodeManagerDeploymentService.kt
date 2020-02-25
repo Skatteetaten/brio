@@ -10,23 +10,23 @@ import org.springframework.stereotype.Component
 private val logger = KotlinLogging.logger {}
 
 @Component
-class NodeManagerDeploymentService(private val cmdbClient: CMDBClient, private val cmdbObjectBuilder: CmdbObjectBuilder) {
+class NodeManagerDeploymentService(private val cmdbClient: CMDBClient) {
 
     fun newNodeManagerDeployment(deployment: NodeManagerDeployment): NodeManagerDeployment? {
         logger.info("Deploying NodeManagerDeployment ${deployment.name}")
-        deployment.applications.forEach {
+        deployment.applications?.forEach {
             updateOrCreateNamedObject(it)
         }
 
-        deployment.databases.forEach {
+        deployment.databases?.forEach {
             updateOrCreateNamedObject(it)
         }
 
-        deployment.artifacts.forEach {
+        deployment.artifacts?.forEach {
             updateOrCreateNamedObject(it)
         }
 
-        deployment.applicationInstances.forEach {
+        deployment.applicationInstances?.forEach {
             val env = it.environment
             if (env != null) updateOrCreateNamedObject(env)
             val runningOn = it.runningOn
@@ -46,8 +46,8 @@ class NodeManagerDeploymentService(private val cmdbClient: CMDBClient, private v
         val jsonInstance = updateOrCreateNamedObject(instance)
         // Need to retreive newly created by finBy iql as returned json after create is incomplete
         val id = jsonInstance.getInt(CmdbStatic.ID)
-        val newJsonInstance = cmdbClient.findById(id) ?: throw Exception("Can not find newly created object in CMDB by id $id")
-        return cmdbObjectBuilder.buildCmdObject(newJsonInstance) as NodeManagerDeployment
+        val instance = cmdbClient.findObjectById(id) ?: throw Exception("Can not find newly created object in CMDB by id $id")
+        return instance as NodeManagerDeployment
     }
 
     private fun updateOrCreateNamedObject(instance: BaseCMDBObject): JSONObject {
