@@ -16,7 +16,7 @@ private val logger = KotlinLogging.logger {}
 class CmdbSecretReader(
     @Value("\${cmdb.token.location:}") private val secretLocation: String?,
     @Value("\${cmdb.token.value:}") private val secretValue: String?
-    ) {
+) {
 
     val secret = initSecret(secretValue)
 
