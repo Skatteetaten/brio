@@ -6,17 +6,18 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import no.skatteetaten.aurora.brio.domain.Artifact
 import no.skatteetaten.aurora.brio.domain.NodeManagerDeployment
+import no.skatteetaten.aurora.brio.security.CmdbSecretReader
 import no.skatteetaten.aurora.mockmvc.extensions.mockwebserver.execute
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.client.RestTemplate
 
-internal class CMDBClientTest_mocked {
+internal class CmdbClientTest_mocked {
 
     private val server = MockWebServer()
 
-    private val cmdbClient = CMDBClient(RestTemplate(), server.url("/").toString(), "1234")
+    private val cmdbClient = CmdbClient(RestTemplate(), CmdbSecretReader(null, "1234"), server.url("/").toString())
 
     @BeforeEach
     fun setUp() {

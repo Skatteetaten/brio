@@ -16,12 +16,12 @@ import org.springframework.context.annotation.Import
 import java.time.LocalDateTime
 import kotlin.test.assertNotNull
 
-@Import(CMDBClient::class)
+@Import(CmdbClient::class)
 @SpringBootTest(classes = [TestApp::class])
-internal class CMDBClientTest {
+internal class CmdbClientTest {
 
     @Autowired
-    lateinit var cmdbClient: CMDBClient
+    lateinit var cmdbClient: CmdbClient
 
     @Test
     fun dummytest() {

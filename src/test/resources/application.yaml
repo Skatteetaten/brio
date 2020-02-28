@@ -1,3 +1,7 @@
 spring:
     main:
         banner-mode: "off"
+
+cmdb.token:
+    location: /u01/secrets/app/aurora-token/cmdb-token
+    value: "QI3KkOnWSvn55I3gODMkoKnlA3m9OW5X"

@@ -1,4 +1,4 @@
-package no.skatteetaten.aurora.brio.controller
+package no.skatteetaten.aurora.brio.controllers
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith

@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import no.skatteetaten.aurora.brio.domain.BaseCMDBObject
 import no.skatteetaten.aurora.brio.domain.CmdbStatic
 import no.skatteetaten.aurora.brio.domain.CmdbType
+import no.skatteetaten.aurora.brio.security.CmdbSecretReader
 import org.json.JSONArray
 import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Value
@@ -18,12 +19,22 @@ private val logger = KotlinLogging.logger {}
 
 @Service
 @EnableConfigurationProperties
-class CMDBClient(
+class CmdbClient(
     private val restTemplate: RestTemplate,
-    @Value("\${integrations.cmdb.url}") val schemaURL: String,
-    @Value("\${integrations.cmdb.accessToken}") val accessToken: String
+    private val cmdbSecretReader: CmdbSecretReader,
+    @Value("\${integrations.cmdb.url}") val schemaURL: String
 ) {
     val mapper = CmdbStatic.mapper
+
+    fun getSchemaInfo(): String? {
+        val iqlUrl = "$schemaURL"
+        return doGetStringResult(iqlUrl)
+    }
+
+    fun getTypes(): String? {
+        val iqlUrl = "$schemaURL/type"
+        return doGetStringResult(iqlUrl)
+    }
 
     fun findByKey(key: String): JSONObject? {
         val iqlUrl = "$schemaURL/instance/iql/Key=$key"
@@ -141,6 +152,7 @@ class CMDBClient(
     }
 
     private fun getHeaders(): HttpHeaders {
+        val accessToken = cmdbSecretReader.secret
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         headers.set("Authorization", "Bearer $accessToken")
