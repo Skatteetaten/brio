@@ -23,7 +23,7 @@ integrations:
         url: "https://cmdb.sits.no/auto/schema/141"
 
 cmdb.token:
-    location: /u01/secrets/app/cmdb-token/token
+    location: /u01/secrets/app/aurora-token/cmdb-token
 
 ---
 spring:
