@@ -9,6 +9,7 @@ import no.skatteetaten.aurora.brio.TestApp
 import no.skatteetaten.aurora.brio.domain.Application
 import no.skatteetaten.aurora.brio.domain.CmdbStatic
 import no.skatteetaten.aurora.brio.domain.CmdbType
+import no.skatteetaten.aurora.brio.security.CmdbSecretReader
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -16,12 +17,12 @@ import org.springframework.context.annotation.Import
 import java.time.LocalDateTime
 import kotlin.test.assertNotNull
 
-@Import(CMDBClient::class)
-@SpringBootTest(classes = [TestApp::class])
-internal class CMDBClientTest {
+@Import(CmdbClient::class)
+@SpringBootTest(classes = [TestApp::class, CmdbSecretReader::class])
+internal class CmdbClientTest {
 
     @Autowired
-    lateinit var cmdbClient: CMDBClient
+    lateinit var cmdbClient: CmdbClient
 
     @Test
     fun dummytest() {

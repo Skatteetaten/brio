@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 private val logger = KotlinLogging.logger {}
 
 @Component
-class NodeManagerDeploymentService(private val cmdbClient: CMDBClient) {
+class NodeManagerDeploymentService(private val cmdbClient: CmdbClient) {
 
     fun newNodeManagerDeployment(deployment: NodeManagerDeployment): NodeManagerDeployment? {
         logger.info("Deploying NodeManagerDeployment ${deployment.name}")

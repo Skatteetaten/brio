@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import no.skatteetaten.aurora.brio.domain.*
+import no.skatteetaten.aurora.brio.security.CmdbSecretReader
 import no.skatteetaten.aurora.mockmvc.extensions.mockwebserver.execute
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -14,7 +15,7 @@ import org.springframework.web.client.RestTemplate
 internal class NodeManagerDeploymentServiceTest {
     private val server = MockWebServer()
 
-    var cmdbClient = CMDBClient(RestTemplate(), server.url("/").toString(), "1234")
+    var cmdbClient = CmdbClient(RestTemplate(), CmdbSecretReader(null, "1234"), server.url("/").toString())
     var service = NodeManagerDeploymentService(cmdbClient)
 
     @Test

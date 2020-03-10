@@ -1,10 +1,8 @@
-package no.skatteetaten.aurora.brio.controller
+package no.skatteetaten.aurora.brio.controllers
 
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Metrics
 import no.skatteetaten.aurora.AuroraMetrics
-import no.skatteetaten.aurora.brio.controllers.ErrorHandler
-import no.skatteetaten.aurora.brio.controllers.NodeManagerDeployment
 import no.skatteetaten.aurora.brio.service.NodeManagerDeploymentService
 import no.skatteetaten.aurora.mockmvc.extensions.Path
 import no.skatteetaten.aurora.mockmvc.extensions.get

@@ -21,7 +21,10 @@ logging:
 integrations:
     cmdb:
         url: "https://cmdb.sits.no/auto/schema/141"
-        accessToken: "QI3KkOnWSvn55I3gODMkoKnlA3m9OW5X"
+
+cmdb.token:
+    location: /u01/secrets/app/aurora-token/cmdb-token
+
 ---
 spring:
     profiles: local
